@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head lang="en" th:replace="fragments/header :: header"> </head>
+
+<body>
+
+    <div id="wrapper">
+
+  <div th:replace="fragments/menu :: menu"> </div>
+  
+
+        <div id="page-wrapper">
+
+            			<br> <br>
+			<div class="row">
+							<div class="col-lg-3 col-sm-3">
+			</div>
+				<div class="col-lg-8 col-sm-8">
+
+				<h2  style="color: red;">معرفات الدخول لمنظومة الانتخاب </h2> 	
+												
+								</div>
+			<div class="col-lg-1 col-sm-1">
+						
+					<button class="btn btn-primary" id='btn' onclick="printFunc();">طباعة</button>
+
+				</div>
+			</div>
+			<br>
+              <div class="panel panel-default">
+
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table  table-bordered table-hover" id="dataTables-example"  dir="rtl">
+                      <thead>
+                    <tr>
+                        <th>رقم  </th>
+                        <th>معرف الدخول</th>
+                        <th>كلمة السر</th>
+
+                        <th>قام بالانتخاب</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="voter,stat: ${voters}" class=""  th:classappend="${voter.etat}=='1' ? success ">
+						<td  th:text="${stat.index}+1"> </td>
+ 						<td th:text="${voter.login}"> </td>					
+						<td th:text="${voter.password}"> </td>					                 
+						<td th:if="${voter.etat}=='0' "> لا</td>
+						<td th:if="${voter.etat}=='1' "> نعم </td>
+						
+                    </tr>
+                    
+                    </tbody>
+                    </table>
+                                <!-- #Modal for removing users -->
+
+                                        </div>
+                                        </div>
+                                        </div>
+                                        
+            <!-- /.row -->
+</div>
+</div>
+                     <script>
+function printFunc() {
+	
+    var divToPrint = document.getElementById('dataTables-example');
+    $('tr').children().eq(3).hide();
+    $('table tr').find('td:eq(3)').hide();
+
+    var htmlToPrint = '' +
+        '<style type="text/css">' +
+        'table th, table td {' +
+        'border:1px solid black;' +
+        'padding;5px;' +
+        
+        'font-size: 18px;' +
+        '}' +
+        'table {' +
+        'margin-left: auto;'+
+        'margin-right: auto;'+
+        ' width: 100%;'+
+        'text-align: centre;'+
+        '}' +
+        '</style>';
+    htmlToPrint += divToPrint.outerHTML;
+    newWin = window.open("");
+    newWin.document.write("<h3 align='center'>معرفات الدخول للمنظومة الانتخابية</h3>");
+   newWin.document.write(htmlToPrint);
+
+    
+    newWin.print();
+    newWin.close();
+    
+    
+    }
+</script>
+           
+    <!-- /#wrapper -->
+
+    <!-- jQuery Version 1.11.0 -->
+    <script src="js/jquery-1.11.0.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="js/metisMenu/metisMenu.min.js"></script>
+
+    <!-- DataTables JavaScript -->
+    <script src="js/jquery/jquery.dataTables.min.js"></script>
+    <script src="js/bootstrap/dataTables.bootstrap.min.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="js/sb-admin-2.js"></script>
+
+    <!-- Page-Level Demo Scripts - Tables - Use for reference -->
+    <script>        
+       $(document).ready(function() {
+    	    $('#dataTables-example').DataTable( {
+    	    	paging: false
+    	      } );
+    	    } );
+    </script>
+<script th:inline="javascript">
+$(document).ready(function(){
+
+    $('.nBtn, .table .eBtn').on('click', function(event) {
+        event.preventDefault();
+        var href = $(this).attr('href');
+        var text = $(this).text();
+        //for update user
+        if (text == 'تعديل') {
+            $.get(href, function (condidat, stat) {
+                $('.myFormUpdate #image').val(condidat.image);
+                $('.myFormUpdate #nom').val(condidat.nom);
+                $('.myFormUpdate #position').val(condidat.position);
+                $('.myFormUpdate #id').val(condidat.id);
+            });
+            $('.myFormUpdate #updateModal').modal();
+  
+        } 
+    });
+    //for delete user
+    $('.table .delBtn').on('click', function(event) {
+        event.preventDefault();
+        var href = $(this).attr('href');
+        $('#removeModalCenter #delRef').attr('href', href);
+        $('#removeModalCenter').modal();
+    });
+});
+</script>
+</body>
+
+</html>

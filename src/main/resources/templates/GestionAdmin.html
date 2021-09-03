@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head lang="en" th:replace="fragments/header :: header"> </head>
+
+<body>
+
+    <div id="wrapper">
+
+  <div th:replace="fragments/menu :: menu"> </div>
+  
+  
+
+        <div id="page-wrapper">
+        <div class="row">
+                <div class="col-lg-12 panel-body">
+                		<a class="btn btn-success" data-toggle="modal" href="#myModalV">اضافة مترشحين </a>               
+                      	 <a data-toggle="modal" href="#myModalResetVV"  class="btn btn-danger">حذف قائمة المترشحين </a>	
+                     	 <a class="btn btn-success" data-toggle="modal" href="#myModalReset"> انشاء حسابات الناخبين   </a>	
+                       	 <a  data-toggle="modal" href="#myModalResetC"  class="btn btn-danger">حذف حسابات الناخبين </a>	
+                         <a th:href="@{/Allvote}" class="btn btn-primary"> الأصوات</a>
+          		            <a class="btn btn-success" data-toggle="modal" href="#myModalAdmin"> اضافة مشرف   </a>
+                      			 	
+                    
+                </div>
+                </div>
+               <div class="row" th:if="${erorXL} != ''">
+                <div  class="col-lg-12  alert alert-danger">
+                    <h3 th:text="${erorXL}"> </h3>
+                    
+                </div>
+<!--                 /.col-lg-12 -->
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-12">
+                    <h3 class="page-header"> قائمة المشرفين على الموقع</h3>
+                    
+                </div>
+<!--                 /.col-lg-12 -->
+            </div>
+            
+              <div class="panel panel-default">
+
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered table-hover" >
+                        <thead>
+                    <tr>
+                        <th>رقم  </th>
+                        <th>معرف الدخول   </th>
+                        <th>الاسم   </th>
+                        <th>الللقب   </th>
+                        <th>الصفة  </th>
+                        <th>تعديل</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="user,stat: ${users}" >
+						
+						<td  th:text="${stat.index}+1"> </td>
+						<td th:text="${user.login}"> </td>
+						<td th:text="${user.prenom}"> </td>						
+						<td th:text="${user.nom}"> </td>
+						<td th:text="${user.role}"> </td>
+						
+						<td> 
+			 <a th:href="@{delete/(id=${user.login})}" class="btn btn-danger btn-xs delBtn">حذف</a>		
+ 	
+						</td>
+                    </tr>
+                    
+                    </tbody>
+                    </table>
+                   </div>
+                                        </div>
+                                        </div>
+                                        
+
+               	<div class="modal fade" id="myModalV" tabindex="-1"
+					role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal"
+									aria-hidden="true">&times;</button>
+								<h4 class="modal-title">اضافة المترشحين لعضوية المجلس
+									الاعلى</h4>
+							</div>
+							<form class="form-horizontal" role="form" method="post"
+								enctype="multipart/form-data" id="form" action="/upload">
+								<div class="modal-body">
+									<h4>االرجاء احترام الجدولة التالية قبل التحميل</h4>
+									<div class="form-group">
+			
+										<div class="col-lg-6">
+											<img  src="extras/image-samples/cc.PNG" width="210%" />
+										</div>
+									</div>
+									<br>
+									<div class="form-group">
+
+										<div class="col-lg-6">
+											<input type="file" name="filename" />
+										</div>
+									</div>
+
+								</div>
+								<div class="modal-footer">
+									<button data-dismiss="modal" class="btn btn-default"
+										type="button">الغاء</button>
+									<button class="btn btn-success" type="submit">تحميل</button>
+								</div>
+							</form>
+
+						</div>
+					</div>
+				</div>
+				
+	     <div class="modal fade"  id="myModalReset" tabindex="-1" role="dialog" aria-labelledby="removeModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">اعلام</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                         <form class="form-horizontal" role="form" th:action="@{/CreateVoter}"  method ="POST">
+                        <div class="modal-body">
+                            <h3>
+                              عدد الحسابات التي ترغب في انشاءها ؟
+                            </h3>
+                               <input type="text" th:name="nbr" class="form-control"  >
+                         </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">الغاء</button>
+                           <button class="btn btn-success" type="submit">انشاء </button>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade"  id="myModalResetC" tabindex="-1" role="dialog" aria-labelledby="removeModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">تحذير</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <h3>
+                              هل تريد حذف حسابات الناخبين
+                            </h3>
+                         </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">الغاء</button>
+                            <a th:href="@{/ResetVoter}" class="btn btn-danger" >حذف </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                        <div class="modal fade"  id="myModalResetVV" tabindex="-1" role="dialog" aria-labelledby="removeModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">تحذير</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <h3>
+هل تريد حذف قائمة المترشحين ؟                            </h3>
+                         </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">الغاء</button>
+                            <a th:href="@{/deleteallCON}" class="btn btn-danger" >حذف </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+<!--                 /.col-lg-12 -->
+            </div>
+                                       <div class="modal fade" id="myModalAdmin" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                            <h4 class="modal-title">اضافة مشرف صفحة</h4>
+                                        </div>
+                                         <form class="form-horizontal" role="form" th:action="@{/addUser}"  method ="POST">                                        
+                                        <div class="modal-body">
+
+                                            <div class="form-group">
+                                                <label for="inputEmail1"  class="col-lg-3 col-sm-3 control-label">معرف الدخول : </label>                                                                                           
+                                                <div class="col-lg-8">
+                                                    <input type="text" th:name="login" class="form-control"  required>
+                                                </div>
+                                            </div>
+                                              <div class="form-group">
+                                                <label for="inputEmail1" class="col-lg-3 col-sm-3 control-label">الاسم : </label>                                                                                             
+                                                <div class="col-lg-8">
+                                                    <input type="text" th:name="prenom" class="form-control" required>
+                                                </div>
+                                            </div>
+                                              <div class="form-group">
+                                                <label for="inputEmail1" class="col-lg-3 col-sm-3 control-label">اللقب : </label>                                                                                            
+                                                <div class="col-lg-8">
+                                                    <input type="text" th:name="nom"  class="form-control"  required >
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                 <label for="inputEmail1" class="col-lg-3 col-sm-3 control-label">كلمة العبور :  </label>                                                                                          
+                                                <div class="col-lg-8">
+                                                    <input type="password" th:name="password" class="form-control" required>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+												<label for="inputEmail1" class="col-lg-3 col-sm-3 control-label">الصفة :</label>                                                                                       
+                                                <div class="col-lg-8">
+                                                   <select th:name="role">
+ 													 <option th:value="ADMIN" selected>مشرف</option>
+  														<option th:value="EDITOR">مشاهد</option>
+												</select>   
+                                                </div>                                                                                
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button data-dismiss="modal" class="btn btn-default" type="button">الغاء </button>
+                                            <button class="btn btn-success" type="submit">تسجيل </button>
+                                        </div>
+                                          </form>
+                                        
+                                    </div>
+                                </div>
+                            </div>                             
+                                            <!-- #Modal for removing users -->
+            <div class="modal fade" id="removeModalCenter" tabindex="-1" role="dialog" aria-labelledby="removeModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="removeModalCenterTitle">تحذير</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="alert alert-danger">
+                              هل تريد حدف هذا المستخدم ؟
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">الغاء</button>
+                            <a href="" class="btn btn-danger" id="delRef">حذف </a>
+                        </div>
+                    </div>
+                </div>
+            </div>           
+                             
+            <!-- /.row -->
+</div>
+    <!-- /#wrapper -->
+
+    <!-- jQuery Version 1.11.0 -->
+    <script src="js/jquery-1.11.0.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="js/metisMenu/metisMenu.min.js"></script>
+
+    <!-- DataTables JavaScript -->
+    <script src="js/jquery/jquery.dataTables.min.js"></script>
+    <script src="js/bootstrap/dataTables.bootstrap.min.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="js/sb-admin-2.js"></script>
+
+    <!-- Page-Level Demo Scripts - Tables - Use for reference -->
+
+<script th:inline="javascript">
+$(document).ready(function(){
+
+    //for delete user
+    $('.table .delBtn').on('click', function(event) {
+        event.preventDefault();
+        var href = $(this).attr('href');
+        $('#removeModalCenter #delRef').attr('href', href);
+        $('#removeModalCenter').modal();
+    });
+});
+</script>
+</body>
+
+</html>

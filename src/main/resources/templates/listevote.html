@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>الكشافة التونسية</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="vote/plugins/fontawesome-free/css/all.min.css">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+  <!-- overlayScrollbars -->
+  <link rel="stylesheet" href="vote/dist/css/adminlte.min.css">
+  <!-- Google Font: Source Sans Pro -->
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+  <style>
+footer{
+
+    width: 100%;
+    
+  position: fixed;
+ left: 0; 
+  bottom: 0;
+  color: white;
+  text-align: center;
+/*   background-color: #1fb5ad; */
+background-image: url(https://wallpaperaccess.com/full/1429682.jpg)
+   }
+   xx {
+  text-align: right;
+}
+</style>
+</head>
+<body class="hold-transition layout-top-nav">
+<!-- Site wrapper -->
+<div class="wrapper">
+
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+  <br><br><br><br><br>
+    <!-- Content Header (Page header) -->
+      <!-- Default box -->
+
+    <!-- Main content -->
+    <section class="content">
+
+      <!-- Default box -->
+      <div class="card card-solid" >
+        <div class="card-body pb-5" >
+                     <h3 th:if="${yes}=='yes'"style=" text-align: center;"> لقد قمت بالانتخاب  سابقا </h3>   
+                      <h3 th:if="${yes}=='no'"style=" text-align: center;"> لقد تمت عملية الانتخاب بنجاح</h3>   
+                     
+                     <br>   
+                          <h4 style=" text-align: center;">سيتم غلق الصفحة تلقائيا بعد 10 ثواني </h4>
+        
+            <br>
+ 
+ 
+ <div class="row">
+ <div class="col-sm-6">
+ 
+ </div>
+  <div class="col-sm-4">
+                         <a id="link_page" th:href="@{/logout}" style=" text-align: center;" class="btn btn-success "> خروج</a>
+ 
+ </div>
+ </div>
+            
+
+          </div>
+        </div>
+
+    </section>
+ 
+  
+  </div>
+  <!-- /.content-wrapper -->
+
+
+  <!-- Control Sidebar -->
+  <aside class="control-sidebar control-sidebar-dark">
+    <!-- Control sidebar content goes here -->
+  </aside>
+  <!-- /.control-sidebar -->
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery -->
+<script src="vote/plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="vote/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE App -->
+<script src="vote/dist/js/adminlte.min.js"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="vote/dist/js/demo.js"></script>
+<script> 
+setTimeout(function() {
+    var linkUrl = document.getElementById('link_page').href;
+    location.href = linkUrl;
+},9000);
+</script>
+</body>
+</html>

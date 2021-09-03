@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head lang="en" th:replace="fragments/header :: header"> </head>
+
+<body>
+
+    <div id="wrapper">
+
+  <div th:replace="fragments/menu :: menu"> </div>
+  
+
+        <div id="page-wrapper">
+            <div class="row">
+                           <div class="col-lg-4">
+                </div>
+                <div class="col-lg-8">
+                    <h1 class="page-header">المنظومة الانتخابية للكشافة التونسية</h1>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+<div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-4">
+                                    <i class="fa fa-comments fa-5x"></i>
+                                </div>
+                                <div class="col-xs-8 text-right">
+                                    <div class="huge"  th:text="${nbr_vote}">26</div>
+                                    <div>               عدد الذين قامة بالانخاب 
+</div>
+                                </div>
+                            </div>
+                        </div>
+ 
+                    </div>
+                </div>
+                                <div class="col-lg-3 col-md-6">
+                    <div class="panel panel-green">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-4">
+                                    <i class="fa fa-comments fa-5x"></i>
+                                </div>
+                                <div class="col-xs-8 text-right">
+                                    <div class="huge" th:text="${nbr_total_voter}">26</div>
+                                    <div>                عدد الناخبين 
+</div>
+                                </div>
+                            </div>
+                        </div>
+ 
+                    </div>
+                </div>
+                                <div class="col-lg-3 col-md-6">
+                    <div class="panel panel-yellow">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-4">
+                                    <i class="fa fa-comments fa-5x"></i>
+                                </div>
+                                <div class="col-xs-8 text-right">
+                                    <div class="huge" th:text="${nbr_con_femme}">26</div>
+                                    <div>عدد المترشحين اناث </div>
+                                </div>
+                            </div>
+                        </div>
+ 
+                    </div>
+                </div>
+                
+
+                                <div class="col-lg-3 col-md-6">
+                    <div class="panel panel-red">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-4">
+                                    <i class="fa fa-comments fa-5x"></i>
+                                </div>
+                                <div class="col-xs-8 text-right">
+                                    <div class="huge" th:text="${nbr_con_homme}">26</div>
+                                    <div>عدد المترشحين ذكور</div>
+                                </div>
+                            </div>
+                        </div>
+ 
+                    </div>
+                </div>
+
+
+</div>
+            <!-- /.row -->
+          
+            <!-- /.row -->
+        </div>
+        <!-- /#page-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+    <!-- jQuery Version 1.11.0 -->
+    <script src="js/jquery-1.11.0.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="js/metisMenu/metisMenu.min.js"></script>
+
+    <!-- Morris Charts JavaScript -->
+    <script src="js/raphael/raphael.min.js"></script>
+    <script src="js/morris/morris.min.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="js/sb-admin-2.js"></script>
+
+</body>
+
+</html>

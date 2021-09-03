@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>الكشافة التونسية</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="vote/plugins/fontawesome-free/css/all.min.css">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+  <!-- overlayScrollbars -->
+  <link rel="stylesheet" href="vote/dist/css/adminlte.min.css">
+  <!-- Google Font: Source Sans Pro -->
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+  <style>
+   xx {
+  text-align: right;
+}
+</style>
+</head>
+<body class="hold-transition layout-top-nav">
+<!-- Site wrapper -->
+     <form th:action="@{/addELECT_F}" method="POST" >                    
+
+<div class="wrapper" >
+
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+  
+    <!-- Content Header (Page header) -->
+      <!-- Default box -->
+      <div class="card card-solid pb-0" dir="rtl"  >
+        <div class="card-body" dir="rtl" style=" background-color: #B62A2A;color: white;">
+          <div class="row d-flex align-items-stretch "  dir="rtl">
+               <div class="col-lg-2"   dir="rtl">
+          <br>             
+          </div>     
+          <div class="col-lg-8"   dir="rtl">
+             <h4 class="xx"> الرجاء اختيار 30 قائدة ممن ترغب في ترشحيهن  لعضوية المجلس الاعلى</h4>
+          
+          </div>
+                    <div class="col-lg-4"  dir="rtl">
+
+          </div>
+          </div>
+        </div>
+
+      </div>
+    <!-- Main content -->
+    <section class="content">
+
+      <!-- Default box -->
+      <div class="card card-solid" dir="rtl">
+        <div class="card-body pb-5" dir="rtl">
+          <div class="row d-flex align-items-stretch" dir="rtl">
+          
+          
+            <div class="col-12 col-sm-2 col-md-3 card " style="background-color:#FFEBEB;" th:each="condidat,stat: ${elections}" dir="rtl">
+    
+                <div class="card-body card-solid">
+                    <div class="col-12 card-header text-center border-bottom-0">
+             
+                   <img th:src="@{${'/image/display/'+ condidat.id}}"  style="width:75px"  alt="" class="img-circle img-fluid">
+                  <br><br>
+                      <h1 class="lead" ><b  th:text="${condidat.nom} "></b></h1>
+                          <input type="checkbox"  th:value="${condidat.id}" name="nbr">
+                                
+                    </div>
+
+                  </div>
+          
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+      <!-- /.card -->
+
+    </section>
+    <!-- /.content -->
+              <div class="modal fade" id="myModal" role="dialog" >
+    <div class="modal-dialog"  dir="rtl">
+    
+      <!-- Modal content-->
+      <div class="modal-content"  dir="rtl">
+        <div class="modal-header"  dir="rtl">
+          <h5 class="modal-title" dir="rtl" align="center">اعلام: لقد قمت باختيار العدد كامل  </h5>
+<!--                     <button type="button" class="close" data-dismiss="modal">&times;&times;&times;&times;</button> -->
+          
+        </div>
+        <div class="modal-body" dir="rtl">
+          <h6 dir="rtl" align="right"> :مراجعة القائمة</h6>
+          <div class="row">
+                     <div id="salle_list" class="col-12 col-sm-12 col-md-12 "  align="right">
+          
+          </div>
+          
+        </div>
+          
+        </div>
+        <div class="modal-footer" dir="rtl">
+         <input type="submit" class="btn btn-success" value="انتخاب  مناب الفتيات"/>         
+          <button type="button" class="btn btn-default" data-dismiss="modal">تعديل</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+    <footer style="width: 100%;position: fixed;left: 0;bottom: 0;color: white; text-align: center;background-color: #B62A2A; "   
+     >
+    <div class="">
+           <h4 id="result" style="font-family:andalus;">  عدد الاختيارات  = <span id="selected">0</span> <span> /30</span> </h4>
+    </div>
+
+  </footer>
+  
+  </div>
+  <!-- /.content-wrapper -->
+
+
+</div>
+</form>
+<!-- jQuery -->
+<script src="vote/plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="vote/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE App -->
+<script src="vote/dist/js/adminlte.min.js"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="vote/dist/js/demo.js"></script>
+<script th:inline="javascript">
+/*<![CDATA[*/
+var currentlyCheckedCount = 0
+
+function disableRemainingCheckboxes() {
+  Array.from(document.querySelectorAll('input[type="checkbox"]:not(:checked)')).forEach(function(element) {
+    element.disabled = 'disabled'
+  })
+}
+
+function enableAllCheckboxes() {
+  Array.from(document.querySelectorAll('input[type="checkbox"]')).forEach(function(element) {
+    element.disabled = undefined
+  })
+
+}
+
+Array.from(document.querySelectorAll("input[type='checkbox']")).forEach(function(checkbox) {
+  checkbox.addEventListener('change', onCheckboxClick)
+})
+function onCheckboxClick() {
+  if(this.checked) {
+    currentlyCheckedCount++
+  } else {
+    currentlyCheckedCount--
+  }
+  
+  if(currentlyCheckedCount == 30) {
+		var items=document.getElementsByName('nbr');
+		//var selectedItems="";
+// 	  var table_header = "<div class='col-6 col-sm-6 col-md-6'><table class='table table-bordered  '><tbody class='col-2 col-sm-2 col-md-2 '><tr class='col-2 col-sm-2 col-md-2 '> ";
+// 	  var table_footer = "</tr></tbody></table></div>";
+	  var table_header = "<ol>";
+	  var table_footer = "</ol>";
+	//	var ll="<table>"+"<tr>";
+	var ll="";
+ 		var myVariable= /*[[${elections}]]*/
+		for(var i=0; i<items.length; i++){
+			if(items[i].type=='checkbox' && items[i].checked==true){
+				for (j = 0; j < myVariable.length; j++) {
+					if (items[i].value == myVariable[j].id) {
+// 				style='display: inline-block;'		ll+="<td class='col-2 col-sm-2 col-md-2 '>"+myVariable[j].nom+"</td>";
+						ll+="<li>"+myVariable[j].nom+"</li>";
+					}
+				}
+			//	ll+="</tr>"+"</table>";
+				
+                var all = table_header +ll+ table_footer;
+
+				 $('#salle_list').html(all);
+// 				selectedItems+=items[i].value+"\n";
+	
+			}
+		}
+// 		alert(ll);
+		
+	  $("#myModal").modal();
+      disableRemainingCheckboxes()
+  } else {
+    enableAllCheckboxes()
+  }
+}
+const selectedElm = document.getElementById('selected');
+
+function showChecked(){
+  selectedElm.innerHTML = document.querySelectorAll('input[name=nbr]:checked').length;
+}
+
+document.querySelectorAll("input[name=nbr]").forEach(i=>{
+ i.onclick = () => showChecked();
+});
+
+/*]]>*/
+</script>
+
+</body>
+</html>
