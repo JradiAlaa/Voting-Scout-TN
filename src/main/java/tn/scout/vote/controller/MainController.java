@@ -409,7 +409,7 @@ public class MainController {
 	        for (int i = 0; i < list.size(); i++) {
 	        	
 	            List<Object> lo = list.get(i);
-	      //      LOGGER.info(String.valueOf(lo.get(0))+","+String.valueOf(lo.get(1))+","+String.valueOf(lo.get(2)));
+	            
 	           BufferedImage bImage = ImageIO.read(new File(String.valueOf(lo.get(0))));
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
 	            ImageIO.write(bImage, "jpg", bos );
@@ -420,7 +420,7 @@ public class MainController {
 	            
 	            String nom = String.valueOf(lo.get(3));
 	            String pos =String.valueOf(lo.get(1));
-	            
+	            LOGGER.info(String.valueOf(lo.get(0))+","+String.valueOf(lo.get(1))+","+String.valueOf(lo.get(3)));
 				CONDIDAT imageGallery = new CONDIDAT(0L,nom, image,pos ,date_nais);
 				condidat_dao.save(imageGallery);
 	            

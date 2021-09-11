@@ -19,9 +19,31 @@
    xx {
   text-align: right;
 }
+#load{
+    width:100%;
+    height:100%;
+    position:fixed;
+    z-index:9999;
+    background:url(login/images/Spinner-3.gif) no-repeat center center rgba(0,0,0,0.25)
+}
 </style>
 </head>
 <body class="hold-transition layout-top-nav">
+<script>
+document.onreadystatechange = function () {
+  var state = document.readyState
+  if (state == 'interactive') {
+       document.getElementById('wrapper').style.visibility="hidden";
+  } else if (state == 'complete') {
+      setTimeout(function(){
+         document.getElementById('interactive');
+         document.getElementById('load').style.visibility="hidden";
+         document.getElementById('wrapper').style.visibility="visible";
+      },1000);
+  }
+}
+</script>
+ <div id="load"></div>
 <!-- Site wrapper -->
      <form th:action="@{/addELECT_F}" method="POST" >                    
 
@@ -59,7 +81,7 @@
           <div class="row d-flex align-items-stretch" dir="rtl">
           
           
-            <div class="col-12 col-sm-2 col-md-3 card " style="background-color:#FFEBEB;" th:each="condidat,stat: ${elections}" dir="rtl">
+            <div class="col-12 col-sm-3 col-md-3 card " style="background-color:#FFEBEB;" th:each="condidat,stat: ${elections}" dir="rtl">
     
                 <div class="card-body card-solid">
                     <div class="col-12 card-header text-center border-bottom-0">
