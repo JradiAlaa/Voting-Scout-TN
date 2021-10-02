@@ -16,6 +16,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
 import java.nio.file.Paths;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
@@ -80,10 +82,10 @@ public class MainController {
 		model.addAttribute("nbr_total_voter", voter_dao.count());
 		model.addAttribute("nbr_con_homme", condidat_dao.CountbyType("H"));
 		model.addAttribute("nbr_con_femme", condidat_dao.CountbyType("F"));
-		model.addAttribute("nbr_vote", voter_dao.getVoteOK());
-		model.addAttribute("listes", global_dao.findAll());
-		model.addAttribute("result_homme", global_dao.getResultVote("H"));
-		model.addAttribute("result_femme", global_dao.getResultVote("F"));
+		model.addAttribute("nbr_vote", voter_dao.getVoteAll());
+		model.addAttribute("nbr_voteok", voter_dao.getVoteOK());
+		model.addAttribute("nbr_voteko", voter_dao.getVoteKO());
+
 		return "index";
 	}
 
@@ -94,6 +96,7 @@ public class MainController {
 			return "404";
 		}
 		model.addAttribute("listes", global_dao.findAll());
+
 		return "Allvote";
 	}
 	
@@ -164,7 +167,7 @@ public class MainController {
 			global_dao.deleteAll();
 			voter_dao.deleteAll();
 			condidat_dao.deleteAll();
-			return "login";
+			return "logout";
 		}
 
 		return "404";
@@ -215,41 +218,6 @@ public class MainController {
 	public String logout(Model model, HttpSession session) {
 		session.invalidate();
 		return "redirect:/login";
-	}
-
-	// ------verif login----
-	@RequestMapping(value = "/auth", method = RequestMethod.POST)
-	public String verif(Model model, @RequestParam(value = "login") String login,
-			@RequestParam(value = "password") String password, HttpSession session) {
-		
-		
-		final String secretKey = "secrete";
-        String decryptedString = encrypt(password, secretKey);
-		USER u = user_dao.getLogin(login, decryptedString);
-		if (u != null) {
-			session.setAttribute("role", u.getRole());
-			session.setAttribute("nom", u.getNom());
-			session.setAttribute("prenom", u.getPrenom());
-			session.setAttribute("id", u.getLogin());
-			return "redirect:/";
-		}
-
-		else  {
-			VOTERS voter = voter_dao.getLogin(login, password);
-			if (voter != null) {
-				session.setAttribute("role", "voter");
-				session.setAttribute("id_voter", voter.getLogin());
-				session.setAttribute("okF", "0");
-				session.setAttribute("okH", "0");
-				return "redirect:/feuille_Vote";
-			}
-			else {
-				session.setAttribute("eureur", "الرجاء التثبت في معطيات الدخول");
-				return "redirect:/login";
-			}
-
-		}
-
 	}
 
 
@@ -317,8 +285,44 @@ public class MainController {
 
 		return "VOTERS";
 	}
+	
+	@GetMapping("/Suivie")
+	public String SuivieVoters(Model model, HttpSession session) {
 
+		if (session.getAttribute("id") == null) {
+			return "404";
+		}
 
+		model.addAttribute("voters", voter_dao.findAll());
+
+		return "Suivie";
+	}
+
+	@GetMapping("/noVote")
+	public String noVote(String id) {
+		//user_dao.deleteById(id);
+		voter_dao.voteEncours("5",id);
+		return "redirect:/Suivie";
+	}
+	@GetMapping("/recordlock")
+	public String recordlock(String id) {
+		//user_dao.deleteById(id);
+		global_dao.reset(id);
+		voter_dao.voteEncours("0",id);
+		return "redirect:/Suivie";
+	}
+	
+	@GetMapping("/notshowvotepage")
+	public String notshowvotepage(String id) {
+		user_dao.upshow(id,"show");
+		return "redirect:/GestionAdmin";
+	}
+	@GetMapping("/showvotepage")
+	public String showvotepage(String id) {
+		user_dao.upshow(id,"notshow");
+		return "redirect:/GestionAdmin";
+	}
+	
 
 
 	@GetMapping("/ResetVoter")
@@ -344,7 +348,7 @@ public class MainController {
 				}else 
 					{
 					 login = getRandomStr(5);
-				//	System.out.println("login trouv :"+login);
+				//	LOGGER.info("login trouv :"+login);
 					}; 
 			}; 
 		}
@@ -368,8 +372,8 @@ public class MainController {
 	        inputStream = file.getInputStream();
 	        list = importService.getBankListByExcel(inputStream,file.getOriginalFilename());
 	        inputStream.close();
-      	    LOGGER.info(""+list);
-
+      	   // LOGGER.info(""+list);
+      	  LOGGER.info(""+list);
 	        for (int i = 1; i < list.size(); i++) {
 	        	List<Object> lo = list.get(i);
 		         String image =String.valueOf(lo.get(0));
@@ -379,6 +383,7 @@ public class MainController {
 
 		        	if ( (nom=="null") || (image=="null") || (image.isEmpty())  || (poss=="null")  || (date_nais=="null") ) {
 
+		        	//	LOGGER.info("champ vide line :"+i);
 		        		LOGGER.info("champ vide line :"+i);
 
 	        		model.addAttribute("erorXL","الرجاء التثبت في الملف يوجد جدول فارغ في السطر "+i) ;
@@ -420,6 +425,7 @@ public class MainController {
 	            
 	            String nom = String.valueOf(lo.get(3));
 	            String pos =String.valueOf(lo.get(1));
+	           // LOGGER.info(String.valueOf(lo.get(0))+","+String.valueOf(lo.get(1))+","+String.valueOf(lo.get(3)));
 	            LOGGER.info(String.valueOf(lo.get(0))+","+String.valueOf(lo.get(1))+","+String.valueOf(lo.get(3)));
 				CONDIDAT imageGallery = new CONDIDAT(0L,nom, image,pos ,date_nais);
 				condidat_dao.save(imageGallery);
@@ -461,130 +467,241 @@ public class MainController {
 	}
 
 	// ----------election---------
+	// ------verif login----
+	@RequestMapping(value = "/auth", method = RequestMethod.POST)
+	public String verif(Model model, @RequestParam(value = "login") String login,
+			@RequestParam(value = "password") String password, HttpSession session) {
+
+		final String secretKey = "secrete";
+        String decryptedString = encrypt(password, secretKey);
+		USER u = user_dao.getLogin(login, decryptedString);
+		if (u != null) {
+			session.setAttribute("role", u.getRole());
+			session.setAttribute("nom", u.getNom());
+			session.setAttribute("prenom", u.getPrenom());
+			session.setAttribute("id", u.getLogin());
+			if (u.getRole().contentEquals("BUREAU"))
+			{
+				return "redirect:/Suivie";
+				
+			}
+			return "redirect:/";
+		}
+
+		else  {
+			String ss = user_dao.getshow("show");
+			if (ss.contentEquals("notshow"))
+			{
+				return "404";	
+			}
+
+			else {
+			
+			VOTERS voter = voter_dao.getLogin(login, password);
+			if (voter != null) {
+				String e = voter_dao.getEt(login);
+
+				if (e.contentEquals("1")) {
+					session.setAttribute("role", "voter");
+					session.setAttribute("id_voter", voter.getLogin());
+					session.setAttribute("okH", "0"); 
+					return "redirect:/listevote";	
+				}
+				if (e.contentEquals("5")) {
+					session.setAttribute("role", "voter");
+					session.setAttribute("id_voter", voter.getLogin());
+					session.setAttribute("okH", "0"); 
+					return "redirect:/listevote";	
+				}
+				if (e.contentEquals("2")) {
+					session.setAttribute("eureur", "هذا المعرف في طور الانتخاب");
+					return "redirect:/login";	
+				}
+				if (e.contentEquals("3")) {
+					session.setAttribute("eureur", "هذا المعرف في طور الانتخاب");
+					return "redirect:/login";	
+				}
+
+
+				voter_dao.voteEncours("2", login);
+				session.setAttribute("role", "voter");
+				session.setAttribute("id_voter", voter.getLogin());
+				return "redirect:/feuille_Vote";
+				
+			}
+			else {
+				session.setAttribute("eureur", "الرجاء التثبت في معطيات الدخول");
+				return "redirect:/login";
+			}
+
+		}}
+
+	}
+
+
 	@GetMapping("/listevote")
 	public String listevote(Model model, HttpSession session) {
-		if (session.getAttribute("id_voter") == null) {
-			return "404";
+	
+		String e = voter_dao.getEt((String) session.getAttribute("id_voter"));
+
+
+		if (e.contentEquals("2")) {
+				return "redirect:/feuille_Vote";
 		}
-		if  ((session.getAttribute("okH").equals("1")) && (session.getAttribute("okF").equals("1"))) {
-			model.addAttribute("yes", "yes");
-			
-		} 
+		if (e.contentEquals("3")) {
+
+				return "redirect:/feuille_Vote_f";
+		}	
 		if (session.getAttribute("okH").equals("1")) {
 			model.addAttribute("yes", "no");
-		} 
+			return "listevote";
+		} 	
+
+		VOTERS rst = voter_dao.getLogin1((String) session.getAttribute("id_voter"));
+		if (rst.getEtat().equals("1")) {
+			model.addAttribute("yes", "yes");
+			return "listevote";
+		}
+		if (rst.getEtat().equals("5")) {
+			model.addAttribute("yes", "zero");
+			return "listevote";
+		}
+
+	
 		
-		model.addAttribute("listes", global_dao.getALLID(session.getAttribute("id_voter").toString()));
-		return "listevote";
+		else
+		return "404";
 	}
 	@GetMapping("/feuille_Vote")
 	public String ELECTION(Model model, HttpSession session) {
-		VOTERS rst = voter_dao.getLogin1((String) session.getAttribute("id_voter"));
 		if (session.getAttribute("id_voter") == null) {
 			return "404";
-		} else if (rst.getEtat().equals("1")) {
-			model.addAttribute("yes", "yes");
-			model.addAttribute("listes", global_dao.getALLID(session.getAttribute("id_voter").toString()));
+		} 
+		
+		String e = voter_dao.getEt((String) session.getAttribute("id_voter"));
 
-			return "listevote";
+		if (e.contentEquals("1")) {
+			model.addAttribute("yes", "yes");
+			return "listevote";	
 		}
-		if (session.getAttribute("okH").equals("1")) {
-			return "redirect:/feuille_Vote_f";
+		if (e.contentEquals("2")) {
+			  LOGGER.info("login  :" +session.getAttribute("id_voter")+" Debut vote homme");
+				model.addAttribute("elections", condidat_dao.GetByPost("H"));
+				return "feuille_Vote";
 		}
-		LOGGER.info("login ok :" +session.getAttribute("id_voter"));
-		LOGGER.info("login  :" +session.getAttribute("id_voter")+" Debut vote homme");
-		model.addAttribute("elections", condidat_dao.GetByPost("H"));
-		return "feuille_Vote";
+		if (e.contentEquals("3")) {
+			return "redirect:/feuille_Vote_f";	
+		}
+	
+		else return "404";
+
 	}
 
 	@RequestMapping(value = "/addELECT", method = RequestMethod.POST)
 	public String handleFileUpload(@RequestParam List<String> nbr, HttpSession session, Model model) {
-		// displaying current date and time
 		if (session.getAttribute("id_voter") == null) {
 			return "404";
 		}
-	//	Long id_voter = (Long) session.getAttribute("id");
-		VOTERS v = voter_dao.getLogin1(session.getAttribute("id_voter").toString());
-		if (session.getAttribute("okF").equals("1")) {
-			return "redirect:/listevote";
-		}
-		if (session.getAttribute("okH").equals("1")) {
-			return "redirect:/feuille_Vote_f";
-		}
+		String e = voter_dao.getEt((String) session.getAttribute("id_voter"));
 
-		if (v.getEtat().equals("0")) {
+		if (e.contentEquals("1")) {
+			model.addAttribute("yes", "yes");
+			return "listevote";	
+		}
+		if (e.contentEquals("3")) {
+			return "redirect:/feuille_Vote_f";	
+		}
+		VOTERS v = voter_dao.getLogin1(session.getAttribute("id_voter").toString());
+
+		if (v.getEtat().equals("2")) {
 			Calendar cal = Calendar.getInstance();
 			SimpleDateFormat simpleformat = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
 			String dd = simpleformat.format(cal.getTime());
+			if (nbr.size() != 45) {
+				 LOGGER.info("login  :" +session.getAttribute("id_voter")+ " mauvaise manip reload page size  :" +nbr.size());
+				return "redirect:/feuille_Vote";
+			}
 			for (String temp : nbr) {
 				int number = Integer.parseInt(temp);
 				long l = number;
 				CONDIDAT c = condidat_dao.getID(l);
 				GLOBAL g = new GLOBAL(0L, dd, v, c);
 				global_dao.save(g);
-				session.setAttribute("okH", "1");
 			}
-			LOGGER.info("login  :" +session.getAttribute("id_voter")+" fin vote homme avec success");
+			 voter_dao.voteEncours("3", (String) session.getAttribute("id_voter"));
+			 LOGGER.info("login  :" +session.getAttribute("id_voter")+" fin vote homme avec success");
 			return "redirect:/feuille_Vote_f";
 
-		} else {
-			model.addAttribute("yes", "yes");
-			model.addAttribute("listes", global_dao.getALLID(session.getAttribute("id_voter").toString()));
-			return "listevote";
-		}
-
+		} 
+		else return "404";
 	}
 
 	@GetMapping("/feuille_Vote_f")
 	public String ELECTION_F(Model model, HttpSession session) {
-		VOTERS rst = voter_dao.getLogin1((String) session.getAttribute("id_voter"));
+		
 		if (session.getAttribute("id_voter") == null) {
 			return "404";
-		} else if (rst.getEtat().equals("1")) {
+		} 
+		
+		String e = voter_dao.getEt((String) session.getAttribute("id_voter"));
+
+		if (e.contentEquals("1")) {
 			model.addAttribute("yes", "yes");
-			model.addAttribute("listes", global_dao.getALLID(session.getAttribute("id_voter").toString()));
-			return "listevote";
+			return "listevote";	
 		}
-		LOGGER.info("login  :" +session.getAttribute("id_voter")+" Debut vote femme");
-		model.addAttribute("elections", condidat_dao.GetByPost("F"));
-		return "feuille_Vote_f";
+		if (e.contentEquals("2")) {
+				return "redirect:/feuille_Vote";
+		}
+		if (e.contentEquals("3")) {
+			 LOGGER.info("login  :" +session.getAttribute("id_voter")+" Debut vote femme");
+				model.addAttribute("elections", condidat_dao.GetByPost("F"));
+				return "feuille_Vote_f";
+		}
+	
+		else return "404";
 	}
 
 	@RequestMapping(value = "/addELECT_F", method = RequestMethod.POST)
 	public String addF(@RequestParam List<String> nbr, HttpSession session, Model model) {
-		// displaying current date and time
+
 		if (session.getAttribute("id_voter") == null) {
 			return "404";
 		}
-		VOTERS v = voter_dao.getLogin1( session.getAttribute("id_voter").toString());
-		if (session.getAttribute("okF").equals("1")) {
-			return "redirect:/listevote";
-		}
-		if (v.getEtat().equals("0")) {
+		String e = voter_dao.getEt((String) session.getAttribute("id_voter"));
 
+		if (e.contentEquals("1")) {
+			model.addAttribute("yes", "yes");
+			return "listevote";	
+		}
+		if (e.contentEquals("2")) {
+			return "redirect:/feuille_Vote";	
+		}
+		VOTERS v = voter_dao.getLogin1(session.getAttribute("id_voter").toString());
+
+		if (v.getEtat().equals("3")) {
 			Calendar cal = Calendar.getInstance();
 			SimpleDateFormat simpleformat = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
 			String dd = simpleformat.format(cal.getTime());
-			// current time
-
+//			// current time
+			if (nbr.size() != 30) {
+				 LOGGER.info("login  :" +session.getAttribute("id_voter")+ " mauvaise manip reload page size  :" +nbr.size());
+				return "redirect:/feuille_Vote_f";
+			}
 			for (String temp : nbr) {
 				int number = Integer.parseInt(temp);
 				long l = number;
 				CONDIDAT c = condidat_dao.getID(l);
 				GLOBAL g = new GLOBAL(0L, dd, v, c);
 				global_dao.save(g);
-				session.setAttribute("okF", "1");
 
 			}
-			voter_dao.votEtat(session.getAttribute("id_voter").toString());
-			LOGGER.info("login  :" +session.getAttribute("id_voter")+" Fin vote femme avec success");
+			 voter_dao.voteEncours("1", (String) session.getAttribute("id_voter"));
+			 LOGGER.info("login  :" +session.getAttribute("id_voter")+" Fin vote femme avec success");
+				session.setAttribute("okH", "1"); 
 			return "redirect:/listevote";
 
-		} else {
-			model.addAttribute("yes", "yes");
-			model.addAttribute("listes", global_dao.getALLID(session.getAttribute("id_voter").toString()));
-			return "listevote";
-		}
+		} 
+		else return "404";
 
 	}
 //-----------------CRYPTAGE -----------------
@@ -613,7 +730,7 @@ public class MainController {
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
             return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
         } catch (Exception e) {
-            System.out.println("Error while encrypting: " + e.toString());
+            LOGGER.info("Error while encrypting: " + e.toString());
         }
         return null;
     }
@@ -625,7 +742,7 @@ public class MainController {
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
             return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
         } catch (Exception e) {
-            System.out.println("Error while decrypting: " + e.toString());
+            LOGGER.info("Error while decrypting: " + e.toString());
         }
         return null;
     }

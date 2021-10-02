@@ -54,11 +54,23 @@
             <!-- /.navbar-top-links -->
             <div class="navbar-default sidebar" role="navigation">
                 <div class="sidebar-nav navbar-collapse">
-                    <ul class="nav" id="side-menu">
+                   <ul class="nav" id="side-menu" th:if="${session.role} == 'BUREAU'">
+ 
+                        <li>
+                            <a  th:href="@{/Suivie}"><i class="fa fa-dashboard fa-fw"></i> الرئيسية</a>
+                        </li>
+
+
+                    </ul>
+                    <ul class="nav" id="side-menu" th:if="${session.role == 'ADMIN' or session.role == 'EDITOR'}">
  
                         <li>
                             <a  th:href="@{/index}"><i class="fa fa-dashboard fa-fw"></i> الرئيسية</a>
                         </li>
+                                    <li>
+                            <a  th:href="@{/Suivie}"><i class="fa fa-dashboard fa-fw"></i> متابعة</a>
+                        </li>
+                        
                         <li>
                             <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> المترشحون <span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">

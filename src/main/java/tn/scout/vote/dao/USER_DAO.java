@@ -27,6 +27,11 @@ public interface USER_DAO extends CrudRepository<USER, String> {
 		@Query(value =" update user set password=:password  where login= :login", nativeQuery = true)
 	public void upPassword( @Param("login") String login, @Param("password") String password) ;
 	
+		@Modifying
+		@Query(value =" update user set nom=:nomm  where login= :login", nativeQuery = true)
+	public void upshow( @Param("login") String login, @Param("nomm") String nomm) ;
 	
+		@Query(value =" select nom from user  where login= :login", nativeQuery = true)
+	public String getshow(@Param("login") String login) ;
 
 }

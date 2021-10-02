@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head lang="en" th:replace="fragments/header :: header"> </head>
+<body>
+
+    <div id="wrapper">
+
+  <div th:replace="fragments/menu :: menu"> </div>
+  
+
+        <div id="page-wrapper">
+
+            			<br> <br>
+			<div class="row">
+							<div class="col-lg-3 col-sm-3">
+			</div>
+				<div class="col-lg-8 col-sm-8">
+
+				<h2  style="color: red;">تأكيد الخروج  </h2> 	
+												
+								</div>
+						<div class="col-lg-1 col-sm-1">
+		
+		<button class="btn btn-primary" onClick="window.location.href=window.location.href">تحيين </button>
+		
+		</div>
+			</div>
+			<br>
+              <div class="panel panel-default">
+
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table  table-bordered table-hover" id="dataTables-example"  dir="rtl">
+                      <thead>
+                    <tr>
+                        <th>معرف الدخول</th>
+						<th>الحالة</th>
+						<th>تعديل</th>
+						
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="voter,stat: ${voters}" class=""  th:classappend="${voter.etat}=='1' ? success ">
+
+				 		<td th:text="${voter.login}"> </td> 
+						<td th:if="${voter.etat}=='0' "> غير مستعمل الى حد الان</td>
+						<td th:if="${voter.etat}=='5' or  ${voter.etat}=='1'"> قام بالانتخاب </td>
+						<td th:if="${voter.etat}=='2' or  ${voter.etat}=='3'"> في طور الانتخاب </td>				
+						<td th:if="${voter.etat == '2' or voter.etat == '3'}">
+						 <a th:href="@{recordlock/(id=${voter.login})}" class="btn btn-primary btn-xs upBtn">تعديل</a>
+						 </td>
+						<td th:if="${voter.etat == '0'}">
+						 <a th:href="@{noVote/(id=${voter.login})}" class="btn btn-primary btn-xs noBtn">تعديل</a>
+						 </td>
+						<td th:if="${voter.etat}=='5' or  ${voter.etat}=='1'">
+						 </td>
+						
+						
+						
+                    </tr>
+                    
+                    </tbody>
+                    </table>
+
+                                        </div>
+                                        </div>
+                                        </div>
+                                        
+                     </div>                   
+                                        
+
+            <div class="modal fade" id="removeModalCenter" tabindex="-1" role="dialog" aria-labelledby="removeModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="removeModalCenterTitle">تعديل</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                        <div class="row">
+                                          	<div class="col-lg-3 col-sm-3">
+                  </div>
+                                          	<div class="col-lg-3 col-sm-3">
+                        	      <a href="" class="btn btn-primary" id="upRef">Reset Voter</a>                       
+							</div>
+                        </div>
+
+                            
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">غلق</button>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+               <div class="modal fade" id="noremoveModalCenter" tabindex="-1" role="dialog" aria-labelledby="removeModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="noremoveModalCenterTitle">تعديل</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                        <div class="row">
+                                          	<div class="col-lg-3 col-sm-3">
+                  </div>
+							<div class="col-lg-3 col-sm-3">
+						      <a href="" class="btn btn-danger" id="noRef">امتنع عن التصويت </a>    
+								</div>
+                        </div>
+
+                            
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">غلق</button>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+</div>
+
+
+           
+    <!-- /#wrapper -->
+
+    <!-- jQuery Version 1.11.0 -->
+    <script src="js/jquery-1.11.0.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="js/metisMenu/metisMenu.min.js"></script>
+
+    <!-- DataTables JavaScript -->
+    <script src="js/jquery/jquery.dataTables.min.js"></script>
+    <script src="js/bootstrap/dataTables.bootstrap.min.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="js/sb-admin-2.js"></script>
+
+    <!-- Page-Level Demo Scripts - Tables - Use for reference -->
+    <script th:inline="javascript">
+$(document).ready(function(){
+
+    //for delete user
+    $('.table .upBtn').on('click', function(event) {
+        event.preventDefault();
+        var href = $(this).attr('href');
+        $('#removeModalCenter #upRef').attr('href', href);
+        $('#removeModalCenter').modal();
+    });
+});
+</script>
+    <script th:inline="javascript">
+$(document).ready(function(){
+
+    //for delete user
+    $('.table .noBtn').on('click', function(event) {
+        event.preventDefault();
+        var href = $(this).attr('href');
+        $('#noremoveModalCenter #noRef').attr('href', href);
+        $('#noremoveModalCenter').modal();
+    });
+});
+</script>
+    <script>        
+       $(document).ready(function() {
+    	    $('#dataTables-example').DataTable( {
+    	   	paging: false
+    	      } );
+    	    } );
+    </script>
+
+</body>
+
+</html>
